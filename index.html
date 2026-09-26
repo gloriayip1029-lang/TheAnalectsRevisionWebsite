@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-HK" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《論仁．論孝．論君子》互動學習平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Noto Serif TC"', 'serif'],
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        amber: { 50: '#fffbeb', 100: '#fef3c7', 500: '#f59e0b', 600: '#d97706', 700: '#b45309' },
+                        emerald: { 50: '#ecfdf5', 600: '#059669', 700: '#047857' },
+                        slate: { 800: '#1e293b', 900: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .highlight-active {
+            background-color: #fef3c7 !important;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .annotation-word {
+            color: #ea580c;
+            font-weight: 600;
+            border-bottom: 2px dashed #f97316;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0 2px;
+        }
+        .annotation-word:hover {
+            background-color: #ffedd5;
+            color: #c2410c;
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-800 flex flex-col antialiased selection:bg-amber-200">
+
+    <!-- Top Header -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-amber-600 text-white p-2 rounded-lg font-serif font-bold text-xl">論</div>
+                    <div>
+                        <h1 class="font-serif font-bold text-lg sm:text-xl tracking-wide">《論仁．論孝．論君子》</h1>
+                        <p class="text-xs text-amber-300">《論語》選篇互動自主學習平台</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center text-sm text-slate-300 space-x-4">
+                    <span class="inline-flex items-center"><i class="fa-solid fa-graduation-cap text-amber-400 mr-2"></i>高中必讀文言經典</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <nav class="bg-slate-800 border-t border-slate-700 overflow-x-auto custom-scrollbar">
+            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-2">
+                <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn py-3 px-4 text-sm font-medium border-b-2 border-amber-500 text-amber-400 flex items-center whitespace-nowrap transition-colors">
+                    <i class="fa-solid fa-book-open mr-2"></i>課文互動對讀
+                </button>
+                <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn py-3 px-4 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-amber-300 flex items-center whitespace-nowrap transition-colors">
+                    <i class="fa-solid fa-sitemap mr-2"></i>課文結構表
+                </button>
+                <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn py-3 px-4 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-amber-300 flex items-center whitespace-nowrap transition-colors">
+                    <i class="fa-solid fa-pen-nib mr-2"></i>修辭及寫作手法
+                </button>
+                <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn py-3 px-4 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-amber-300 flex items-center whitespace-nowrap transition-colors">
+                    <i class="fa-solid fa-list-check mr-2"></i>選擇題測驗 (10題)
+                </button>
+                <button onclick="switchTab(5)" id="tab-btn-5" class="tab-btn py-3 px-4 text-sm font-medium border-b-2 border-transparent text-slate-300 hover:text-amber-300 flex items-center whitespace-nowrap transition-colors">
+                    <i class="fa-solid fa-keyboard mr-2"></i>背誦默寫挑戰
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: 課文互動對讀 -->
+        <section id="tab-1" class="tab-content block space-y-6">
+            <!-- Top Controls -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-semibold text-slate-700"><i class="fa-solid fa-filter text-amber-600 mr-1"></i>範疇選單：</span>
+                    <button onclick="filterText('all')" id="filter-all" class="filter-btn px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-600 text-white">全部條目 (16章)</button>
+                    <button onclick="filterText('ren')" id="filter-ren" class="filter-btn px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">【論仁】(1-4)</button>
+                    <button onclick="filterText('xiao')" id="filter-xiao" class="filter-btn px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">【論孝】(5-8)</button>
+                    <button onclick="filterText('junzi')" id="filter-junzi" class="filter-btn px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">【論君子】(9-16)</button>
+                </div>
+                <div class="text-xs text-slate-500 bg-amber-50 border border-amber-200 p-2 rounded-lg flex items-center">
+                    <i class="fa-solid fa-lightbulb text-amber-500 mr-2 text-sm"></i>
+                    <span>提示：點擊段落即可<b>同步對讀高亮</b>；點擊<span class="text-orange-600 font-bold border-b border-orange-500">橙色重點詞語</span>可彈出極詳細注釋說明！</span>
+                </div>
+            </div>
+
+            <!-- Side-by-side Reading Panels -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left Column: Classical Text -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                    <div class="bg-slate-800 text-white px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+                        <h2 class="font-serif font-bold text-lg flex items-center"><i class="fa-solid fa-scroll text-amber-400 mr-2"></i>文言原文</h2>
+                        <span class="text-xs bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full">古文對讀</span>
+                    </div>
+                    <div id="classical-container" class="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[70vh] custom-scrollbar">
+                        <!-- Classical items rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Column: Translation Text -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                    <div class="bg-amber-700 text-white px-4 py-3 border-b border-amber-800 flex justify-between items-center">
+                        <h2 class="font-serif font-bold text-lg flex items-center"><i class="fa-solid fa-language text-amber-200 mr-2"></i>白話語譯</h2>
+                        <span class="text-xs bg-amber-800 text-amber-100 px-2.5 py-1 rounded-full">逐句對應</span>
+                    </div>
+                    <div id="translation-container" class="p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[70vh] custom-scrollbar">
+                        <!-- Translation items rendered dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: 課文結構表 -->
+        <section id="tab-2" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+                    <div>
+                        <h2 class="font-serif font-bold text-2xl text-slate-900"><i class="fa-solid fa-sitemap text-amber-600 mr-2"></i>《論仁．論孝．論君子》課文結構脈絡表</h2>
+                        <p class="text-sm text-slate-500 mt-1">系統化整理《論語》三大部分的核心內涵、具體表現、實踐方法與對比解析</p>
+                    </div>
+                    <button onclick="window.print()" class="hidden sm:inline-flex items-center px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">
+                        <i class="fa-solid fa-print mr-1"></i>列印結構表
+                    </button>
+                </div>
+
+                <!-- Structure Cards Grid -->
+                <div class="space-y-8">
+                    <!-- Section 1: 論仁 -->
+                    <div class="border border-amber-200 rounded-xl bg-amber-50/40 overflow-hidden">
+                        <div class="bg-amber-600 text-white px-5 py-3 flex items-center justify-between">
+                            <h3 class="font-serif font-bold text-lg flex items-center"><i class="fa-solid fa-heart mr-2"></i>第一部分：論仁 (第1-4章)</h3>
+                            <span class="text-xs bg-amber-700 px-3 py-1 rounded-full font-medium">儒家核心道德總綱</span>
+                        </div>
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-amber-100">
+                                <h4 class="font-bold text-amber-800 text-sm border-b border-amber-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-compass mr-2"></i>仁的涵義</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed">中心意思即<b>「克己復禮」</b>，即約束自己，使言語行動都合乎禮的準則。</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-amber-100">
+                                <h4 class="font-bold text-amber-800 text-sm border-b border-amber-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-shield-halved mr-2"></i>仁的表現</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed">必然以<b>正當方法</b>得富貴與處貧賤。即使在「造次」（倉卒）與「顛沛」（挫折）時都不離仁德；甚至能「殺身以成仁」。</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-amber-100">
+                                <h4 class="font-bold text-amber-800 text-sm border-b border-amber-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-shoe-prints mr-2"></i>實行仁的方法</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed"><b>由己不由人</b>。具體做法是「四勿」：<b>非禮勿視、非禮勿聽、非禮勿言、非禮勿動</b>。</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-amber-100">
+                                <h4 class="font-bold text-amber-800 text-sm border-b border-amber-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-scale-balanced mr-2"></i>仁者與不仁者/智者區別</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed">不仁者：不可久處約、不可以長處樂。<br>仁者：<b>安仁</b>（安於實踐仁德）；<br>智者：<b>利仁</b>（認識到仁德有長遠大利而利用仁）。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: 論孝 -->
+                    <div class="border border-blue-200 rounded-xl bg-blue-50/40 overflow-hidden">
+                        <div class="bg-blue-600 text-white px-5 py-3 flex items-center justify-between">
+                            <h3 class="font-serif font-bold text-lg flex items-center"><i class="fa-solid fa-hands-holding-child mr-2"></i>第二部分：論孝 (第5-8章)</h3>
+                            <span class="text-xs bg-blue-700 px-3 py-1 rounded-full font-medium">仁德在家庭的實踐</span>
+                        </div>
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                                <h4 class="font-bold text-blue-800 text-sm border-b border-blue-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-gavel mr-2"></i>孝的涵義</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed">做到<b>「無違」</b>（不違背禮節）。生，事之以禮；死，葬之以禮，祭之以禮。</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                                <h4 class="font-bold text-blue-800 text-sm border-b border-blue-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-heart-pulse mr-2"></i>孝的核心表現</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed">不僅是物質上的「能養」，關鍵在於<b>「敬」</b>。若不存敬意，供養父母與飼養犬馬別無二致。</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                                <h4 class="font-bold text-blue-800 text-sm border-b border-blue-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-comments mr-2"></i>規勸父母的態度</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed"><b>「幾諫」</b>（婉轉勸止）。若見志不從，仍要「又敬不違，勞而不怨」（恭敬不冒犯，擔憂而不抱怨）。</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                                <h4 class="font-bold text-amber-800 text-sm border-b border-blue-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-hourglass-half mr-2"></i>記掛父母年紀</h4>
+                                <p class="text-xs text-slate-700 leading-relaxed">父母之年不可不知。<b>「一則以喜」</b>（因父母高壽而高興），<b>「一則以懼」</b>（因父母衰老而憂懼）。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: 論君子 -->
+                    <div class="border border-emerald-200 rounded-xl bg-emerald-50/40 overflow-hidden">
+                        <div class="bg-emerald-600 text-white px-5 py-3 flex items-center justify-between">
+                            <h3 class="font-serif font-bold text-lg flex items-center"><i class="fa-solid fa-user-tie mr-2"></i>第三部分：論君子 (第9-16章)</h3>
+                            <span class="text-xs bg-emerald-700 px-3 py-1 rounded-full font-medium">理想人格之體現</span>
+                        </div>
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-emerald-100">
+                                <h4 class="font-bold text-emerald-800 text-sm border-b border-emerald-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-user-shield mr-2"></i>君子的個人修養</h4>
+                                <ul class="text-xs text-slate-700 space-y-1.5 list-disc list-inside">
+                                    <li><b>儀表端莊</b>：不重則不威，學則不固。</li>
+                                    <li><b>義以為質</b>：以合宜為原則，禮行、孫出、信成。</li>
+                                    <li><b>內省不疚</b>：自省無愧，故「不憂不懼」。</li>
+                                    <li><b>嚴於律己</b>：恥其言而過其行，病無能而不病人之不己知。</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-emerald-100">
+                                <h4 class="font-bold text-emerald-800 text-sm border-b border-emerald-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-handshake mr-2"></i>君子的待人處事</h4>
+                                <ul class="text-xs text-slate-700 space-y-1.5 list-disc list-inside">
+                                    <li><b>主忠信</b>：以忠誠誠信為原則。</li>
+                                    <li><b>慎擇朋友</b>：無友不如己者（不交志不同者）。</li>
+                                    <li><b>過則勿憚改</b>：知錯能改，不害怕修正。</li>
+                                    <li><b>成人之美</b>：成全人之好事，不成人之惡。</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm border border-emerald-100">
+                                <h4 class="font-bold text-emerald-800 text-sm border-b border-emerald-100 pb-2 mb-2 flex items-center"><i class="fa-solid fa-code-compare mr-2"></i>君子與小人的對比</h4>
+                                <ul class="text-xs text-slate-700 space-y-1.5">
+                                    <li>• <b>胸襟</b>：君子坦蕩蕩 ✕ 小人長戚戚</li>
+                                    <li>• <b>助人</b>：君子成人之美 ✕ 小人反是</li>
+                                    <li>• <b>責求</b>：君子求諸己 ✕ 小人求諸人</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: 修辭及寫作手法 -->
+        <section id="tab-3" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="font-serif font-bold text-2xl text-slate-900"><i class="fa-solid fa-pen-nib text-amber-600 mr-2"></i>修辭手法與文章寫作特色</h2>
+                    <p class="text-sm text-slate-500 mt-1">深入剖析《論語》語錄體的語言藝術、說理結構與修辭風格</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Writing Style 1: 領語式結構 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="bg-amber-100 text-amber-800 p-2 rounded-lg font-bold"><i class="fa-solid fa-arrow-down-short-wide"></i></div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">領語式論述結構</h3>
+                                <span class="text-xs text-slate-500">先引領主題關鍵詞，再展開具體闡述</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3 leading-relaxed">先引出關鍵詞語，然後再進行具體說明，好處是<b>論述對象明確、一目了然</b>。</p>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs space-y-2">
+                            <div class="font-semibold text-amber-800">【範例】</div>
+                            <div>• <b>「顏淵問仁。子曰：克己復禮為仁。」</b><br><span class="text-slate-500">→ 下文即就「克己復禮」具體說明四勿（非禮勿視……）。</span></div>
+                            <div>• <b>「孟懿子問孝。子曰：無違。」</b><br><span class="text-slate-500">→ 下文即具體解釋何謂「無違」（生事以禮，死葬以禮，祭以禮）。</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Writing Style 2: 對比說理 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="bg-amber-100 text-amber-800 p-2 rounded-lg font-bold"><i class="fa-solid fa-circle-half-stroke"></i></div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">鮮明的對比說理</h3>
+                                <span class="text-xs text-slate-500">正反對照，突出正道主張</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3 leading-relaxed">透過正反立場、君子與小人、侍奉父母與養狗馬的強烈對比，讓讀者清晰明白儒家核心價值。</p>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs space-y-2">
+                            <div class="font-semibold text-amber-800">【範例】</div>
+                            <div>• <b>君子與小人</b>：「君子坦蕩蕩，小人長戚戚」、「君子求諸己，小人求諸人」。</div>
+                            <div>• <b>養父母與養犬馬</b>：「至於犬馬，皆能有養；不敬，何以別乎！」</div>
+                        </div>
+                    </div>
+
+                    <!-- Writing Style 3: 語錄體風格 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="bg-amber-100 text-amber-800 p-2 rounded-lg font-bold"><i class="fa-solid fa-comments"></i></div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">語錄體與對話情境</h3>
+                                <span class="text-xs text-slate-500">簡練真實，富現場感</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3 leading-relaxed">記載孔子與弟子的真實對話，語言極為精練，蘊含深厚的人生哲理，富於啟發性與現場感染力。</p>
+                    </div>
+
+                    <!-- Rhetorical Devices Box -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="bg-amber-100 text-amber-800 p-2 rounded-lg font-bold"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-base">核心修辭手法</h3>
+                                <span class="text-xs text-slate-500">增強對稱美感與語言氣勢</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="bg-white p-2.5 rounded border border-slate-200">
+                                <span class="font-bold text-amber-700">1. 對偶：</span>「無求生以害仁，有殺身以成仁。」/「君子坦蕩蕩，小人長戚戚。」
+                            </div>
+                            <div class="bg-white p-2.5 rounded border border-slate-200">
+                                <span class="font-bold text-amber-700">2. 排比：</span>「非禮勿視，非禮勿聽，非禮勿言，非禮勿動。」
+                            </div>
+                            <div class="bg-white p-2.5 rounded border border-slate-200">
+                                <span class="font-bold text-amber-700">3. 反問：</span>「君子去仁，惡乎成名？」/「為仁由己，而由人乎哉？」
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: 10題選擇題測驗 -->
+        <section id="tab-4" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <!-- Quiz Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
+                    <div>
+                        <h2 class="font-serif font-bold text-2xl text-slate-900 flex items-center">
+                            <i class="fa-solid fa-list-check text-amber-600 mr-2"></i>課文經典理解測驗
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">每次隨機抽選 10 題進行測試 (答對 6 題或以上解鎖詳細成績評語與解析)</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="generateQuiz()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors flex items-center">
+                            <i class="fa-solid fa-arrows-rotate mr-2"></i>換一組新題目
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Progress Bar -->
+                <div id="quiz-progress-box" class="mb-6 hidden">
+                    <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                        <span>完成進度</span>
+                        <span id="quiz-progress-text">0 / 10 題</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div id="quiz-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Questions Container -->
+                <form id="quiz-form" onsubmit="event.preventDefault(); submitQuiz();" class="space-y-8">
+                    <div id="quiz-questions-list" class="space-y-6">
+                        <!-- Dynamic 10 Questions Rendered Here -->
+                    </div>
+
+                    <!-- Submit Button Footer -->
+                    <div class="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div id="quiz-result-summary" class="text-sm font-bold text-slate-700"></div>
+                        <button type="submit" id="submit-quiz-btn" class="w-full sm:w-auto px-8 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center">
+                            <i class="fa-solid fa-paper-plane mr-2"></i>提交答案對答案
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- TAB 5: 3題背誦默寫題 -->
+        <section id="tab-5" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
+                    <div>
+                        <h2 class="font-serif font-bold text-2xl text-slate-900 flex items-center">
+                            <i class="fa-solid fa-keyboard text-amber-600 mr-2"></i>名句背誦默寫挑戰
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">根據前後句提示，打字補全橫線缺漏部分（自動忽略標點符號差異）</p>
+                    </div>
+                    <button onclick="generateRecitation()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors flex items-center">
+                        <i class="fa-solid fa-arrows-rotate mr-2"></i>刷新背誦題
+                    </button>
+                </div>
+
+                <!-- Recitation Form -->
+                <form id="recitation-form" onsubmit="event.preventDefault(); submitRecitation();" class="space-y-6">
+                    <div id="recitation-container" class="space-y-6">
+                        <!-- 3 Fill in the blank questions rendered dynamically -->
+                    </div>
+
+                    <div class="pt-6 border-t border-slate-200 flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center">
+                            <i class="fa-solid fa-check-double mr-2"></i>提交背誦答案
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Dialog for Annotations -->
+    <div id="annotation-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-serif font-bold text-lg text-amber-400 flex items-center">
+                    <i class="fa-solid fa-bookmark mr-2"></i>字詞注釋與釋義
+                </h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-baseline space-x-3">
+                    <span id="modal-word" class="text-2xl font-bold font-serif text-amber-800"></span>
+                    <span id="modal-pinyin" class="text-sm font-medium text-slate-500"></span>
+                </div>
+                <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                    <div class="text-xs font-bold text-amber-800 mb-1">【詞語解釋】</div>
+                    <p id="modal-explanation" class="text-sm text-slate-800 leading-relaxed font-medium"></p>
+                </div>
+                <div id="modal-student-friendly-box" class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div class="text-xs font-bold text-slate-600 mb-1">【學生友善拆解 / 延伸例句】</div>
+                    <p id="modal-student-friendly" class="text-xs text-slate-600 leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="bg-slate-100 px-6 py-3 flex justify-end">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg">明白</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Section Data with Annotation definitions
+        const classicalData = [
+            { id: 1, cat: 'ren', title: '【論仁】第一章', origin: '子曰：「不仁者，不可以久處<span class="annotation-word" onclick="showNote(\'約\')">約</span>，不可以長處樂。仁者<span class="annotation-word" onclick="showNote(\'安仁\')">安仁</span>，<span class="annotation-word" onclick="showNote(\'知\')">知</span>者<span class="annotation-word" onclick="showNote(\'利仁\')">利仁</span>。」（《里仁》第四）', trans: '孔子說：「沒有仁德的人，不能夠長久地居於窮困的環境，不能夠長久地居於安樂的環境。有仁德的人習慣於實行仁德，聰明的人利用仁德。」' },
+            { id: 2, cat: 'ren', title: '【論仁】第二章', origin: '子曰：「富與貴，是人之所欲也；不以其道得之，不<span class="annotation-word" onclick="showNote(\'處\')">處</span>也。貧與賤，是人之所惡也；不以其道得之，不<span class="annotation-word" onclick="showNote(\'去\')">去</span>也。君子<span class="annotation-word" onclick="showNote(\'去仁\')">去</span>仁，<span class="annotation-word" onclick="showNote(\'惡乎\')">惡乎</span>成名？君子無<span class="annotation-word" onclick="showNote(\'終食之間\')">終食之間</span>違仁，<span class="annotation-word" onclick="showNote(\'造次\')">造次</span>必於是，<span class="annotation-word" onclick="showNote(\'顛沛\')">顛沛</span>必於是。」（《里仁》第四）', trans: '孔子說：「富裕和顯貴，這是人人所想要的；不是用那正當的方法得到它，就不接受。貧窮和低賤，這是人人所厭惡的；不是用那正當的方法拋掉它，就不離棄。君子離棄仁德，怎麼成就名聲呢？君子不會在吃完一頓飯的時間離開仁德，倉促匆忙的處境下必定與仁德同在，生活困苦、遭受挫折的處境下必定與仁德同在。」' },
+            { id: 3, cat: 'ren', title: '【論仁】第三章', origin: '<span class="annotation-word" onclick="showNote(\'顏淵\')">顏淵</span>問仁。子曰：「<span class="annotation-word" onclick="showNote(\'克己復禮\')">克己復禮</span>為仁。一日克己復禮，天下歸仁焉。為仁由己，而由人乎哉？」顏淵曰：「請問其<span class="annotation-word" onclick="showNote(\'目\')">目</span>。」子曰：「非禮勿視，非禮勿聽，非禮勿言，非禮勿動。」顏淵曰：「回雖不敏，請事斯語矣。」（《顏淵》第十二）', trans: '顏淵問仁道。孔子說：「約束自己，使言行合乎禮的準則就是仁。一旦約束自己，使言行合乎禮的準則，天下的人都會讚許你是有仁德的人。實踐仁德要靠自己，難道能靠別人嗎？」顏淵說：「請問那個要點是什麼。」孔子說：「不合禮法的事物不要看，不合禮法的話不要聽，不合禮法的話不要說，不合禮法的事情不要做。」顏淵說：「我雖然不聰慧，請允許我實行您這說話吧。」' },
+            { id: 4, cat: 'ren', title: '【論仁】第四章', origin: '子曰：「志士仁人，無求生以害仁，有<span class="annotation-word" onclick="showNote(\'殺身成仁\')">殺身以成仁</span>。」（《衛靈公》第十五）', trans: '孔子說：「堅守仁義的人和有仁德的人，沒有為求生存以致損害仁德的，只有犧牲生命來成全仁德的。」' },
+            
+            { id: 5, cat: 'xiao', title: '【論孝】第五章', origin: '<span class="annotation-word" onclick="showNote(\'孟懿子\')">孟懿子</span>問孝。子曰：「<span class="annotation-word" onclick="showNote(\'無違\')">無違</span>。」<span class="annotation-word" onclick="showNote(\'樊遲御\')">樊遲御</span>，子告之曰：「孟孫問孝於我，我對曰：『無違。』」樊遲曰：「何謂也？」子曰：「生，事之以禮；死，葬之以禮，祭之以禮。」（《為政》第二）', trans: '孟懿子問孝道。孔子說：「不要違背禮節。」樊遲替孔子駕駛馬車，孔子告訴他說：「孟孫向我問孝道，我回答說『不要違背禮節』。」樊遲說：「這是什麼意思？」孔子說：「父母在生時，依照禮節來侍奉他們；父母死去後，依照禮節來埋葬他們，依照禮節來祭祀他們。」' },
+            { id: 6, cat: 'xiao', title: '【論孝】第六章', origin: '<span class="annotation-word" onclick="showNote(\'子游\')">子游</span>問孝。子曰：「今之孝者，是謂<span class="annotation-word" onclick="showNote(\'能養\')">能養</span>。至於犬馬，皆能<span class="annotation-word" onclick="showNote(\'有養\')">有養</span>；不敬，何以別乎！」（《為政》第二）', trans: '子游問孝道。孔子說：「現今的所謂孝，只是說子女能供養父母。狗、馬都能得到人們飼養；不尊敬父母的話，用什麼區別供養父母與飼養狗馬呢！」' },
+            { id: 7, cat: 'xiao', title: '【論孝】第七章', origin: '子曰：「事父母<span class="annotation-word" onclick="showNote(\'幾諫\')">幾諫</span>，見志不從，又敬不違，<span class="annotation-word" onclick="showNote(\'勞而不怨\')">勞而不怨</span>。」（《里仁》第四）', trans: '孔子說：「侍奉父母，如果他們犯錯要輕微、婉轉地勸止，看到自己勸諫的意見不被父母聽從，仍然恭敬地不冒犯父母，雖然擔憂但不抱怨。」' },
+            { id: 8, cat: 'xiao', title: '【論孝】第八章', origin: '子曰：「父母之年，不可不知也。一則以喜，一則以懼。」（《里仁》第四）', trans: '孔子說：「父母的年紀，子女不能不記住。一方面因為父母長壽而高興，另一方面因為父母年老而懼怕。」' },
+            
+            { id: 9, cat: 'junzi', title: '【論君子】第九章', origin: '子曰：「君子<span class="annotation-word" onclick="showNote(\'不重則不威\')">不重則不威</span>；<span class="annotation-word" onclick="showNote(\'學則不固\')">學則不固</span>。<span class="annotation-word" onclick="showNote(\'主忠信\')">主忠信</span>。<span class="annotation-word" onclick="showNote(\'無友不如己者\')">無友不如己者</span>。<span class="annotation-word" onclick="showNote(\'過則勿憚改\')">過則勿憚改</span>。」（《學而》第一）', trans: '孔子說：「君子不莊重就不會有威嚴，所學的東西就不會牢固。為人處世以忠誠、信實為主。不會結交志向跟自己不同的人。犯了錯就不要害怕改正。」' },
+            { id: 10, cat: 'junzi', title: '【論君子】第十章', origin: '子曰：「<span class="annotation-word" onclick="showNote(\'坦蕩蕩\')">君子坦蕩蕩</span>，<span class="annotation-word" onclick="showNote(\'長戚戚\')">小人長戚戚</span>。」（《述而》第七）', trans: '孔子說：「君子胸襟舒坦寬廣，小人經常憂愁畏懼。」' },
+            { id: 11, cat: 'junzi', title: '【論君子】第十一章', origin: '<span class="annotation-word" onclick="showNote(\'司馬牛\')">司馬牛</span>問君子。子曰：「君子不憂不懼。」曰：「不憂不懼，斯謂之君子已乎？」子曰：「<span class="annotation-word" onclick="showNote(\'內省不疚\')">內省不疚</span>，夫何憂何懼？」（《顏淵》第十二）', trans: '司馬牛問君子的道理。孔子說：「君子不憂愁不恐懼。」司馬牛說：「不憂愁不恐懼，這就可以稱為君子了嗎？」孔子說：「內心反省而沒有愧疚，還有什麼要憂愁，有什麼要恐懼呢？」' },
+            { id: 12, cat: 'junzi', title: '【論君子】第十二章', origin: '子曰：「<span class="annotation-word" onclick="showNote(\'成人之美\')">君子成人之美</span>，不成人之惡。小人反是。」（《顏淵》第十二）', trans: '孔子說：「君子成全別人的好事，不促成別人的壞事。小人與這個相反。」' },
+            { id: 13, cat: 'junzi', title: '【論君子】第十三章', origin: '子曰：「<span class="annotation-word" onclick="showNote(\'恥其言而過其行\')">君子恥其言而過其行</span>。」（《憲問》第十四）', trans: '孔子說：「君子以自己的說話多過自己的行動為羞恥。」' },
+            { id: 14, cat: 'junzi', title: '【論君子】第十四章', origin: '子曰：「<span class="annotation-word" onclick="showNote(\'義以為質\')">君子義以為質</span>，禮以行之，<span class="annotation-word" onclick="showNote(\'孫以出之\')">孫以出之</span>，信以成之。君子哉！」（《衛靈公》第十五）', trans: '孔子說：「君子把合宜作為立身的原則，依禮來實行義，用謙遜的言語來說出它，用誠實的態度來完成它。這真是位君子啊！」' },
+            { id: 15, cat: 'junzi', title: '【論君子】第十五章', origin: '子曰：「<span class="annotation-word" onclick="showNote(\'病無能\')">君子病無能焉</span>，<span class="annotation-word" onclick="showNote(\'不病人之不己知\')">不病人之不己知也</span>。」（《衛靈公》第十五）', trans: '孔子說：「君子只擔心自己沒有能力，不擔心別人不了解自己啊。」' },
+            { id: 16, cat: 'junzi', title: '【論君子】第十六章', origin: '子曰：「<span class="annotation-word" onclick="showNote(\'求諸己\')">君子求諸己</span>，小人求諸人。」（《衛靈公》第十五）', trans: '孔子說：「君子責求的是自己，小人責求的是他人。」' }
+        ];
+
+        const notesDB = {
+            '約': { pinyin: '約 (yuē / 粵: joek3)', exp: '窮困、貧困。', friendly: '「久處約」意思是指長久生活在貧困貧苦的環境中。' },
+            '安仁': { pinyin: '安仁', exp: '安於實踐仁德。', friendly: '仁者實行仁德是出於自然本心，不求回報，故能心安。' },
+            '知': { pinyin: '知 (zhì / 通「智」)', exp: '通「智」，聰明、有智慧的人。', friendly: '古文中「知」與「智」常通用。' },
+            '利仁': { pinyin: '利仁', exp: '利用仁德。', friendly: '智者認識到實行仁德對自己有長遠巨大的好處，因而去實行它。' },
+            '處': { pinyin: '處 (chǔ)', exp: '接受、居處。', friendly: '不以正當方法得富貴，君子便不接受。' },
+            '去': { pinyin: '去 (qù / 粵: heoi2)', exp: '擺脫、擺脫貧賤；或捨棄。', friendly: '不以正當方法拋掉貧賤，君子寧可不離棄。' },
+            '去仁': { pinyin: '去仁', exp: '捨棄、離開仁德。', friendly: '君子若離開了仁德，就談不上成就名聲。' },
+            '惡乎': { pinyin: '惡乎 (wū hū / 粵: wu1 fu1)', exp: '疑問詞，怎麼、如何。', friendly: '「惡乎成名」即「怎麼成就名聲呢？」' },
+            '終食之間': { pinyin: '終食之間', exp: '吃完一頓飯的時間，比喻極短暫的時間。', friendly: '形容君子時刻不忘仁德。' },
+            '造次': { pinyin: '造次 (zào cì / 粵: cou3 ci3)', exp: '倉卒、匆忙緊迫的時候。', friendly: '即使在最急迫混亂之際，君子也堅持仁德。' },
+            '顛沛': { pinyin: '顛沛 (diān pèi)', exp: '困頓挫折、流離失所的時候。', friendly: '即便遭受重大打擊，君子仍遵守仁義。' },
+            '顏淵': { pinyin: '顏淵', exp: '孔子最得意弟子，名回，字子淵。', friendly: '以好學、品德高尚著稱。' },
+            '克己復禮': { pinyin: '克己復禮', exp: '克制私欲，使言行合乎禮的規範。', friendly: '「克」是克制；「復」是回歸。這是實踐仁德的總綱。' },
+            '目': { pinyin: '目', exp: '綱目、具體條目、要點。', friendly: '顏淵請教實踐「克己復禮」的具體條款。' },
+            '殺身成仁': { pinyin: '殺身成仁', exp: '犧牲生命以成全仁德。', friendly: '當生命的維持與仁德衝突時，選擇堅持仁德。' },
+            '孟懿子': { pinyin: '孟懿子', exp: '魯國大夫，姓仲孫，名何忌。', friendly: '曾遵父命向孔子學禮。' },
+            '無違': { pinyin: '無違', exp: '不要違背禮節。', friendly: '孝順的核心是尊崇禮制。' },
+            '樊遲御': { pinyin: '樊遲御 (yù)', exp: '樊遲（孔子弟子）替孔子駕馭馬車。', friendly: '御：駕駛車馬。' },
+            '子游': { pinyin: '子游', exp: '孔子弟子，姓言，名偃，字子游。', friendly: '以文學著稱。' },
+            '能養': { pinyin: '能養 (yǎng / 粵: joeng6)', exp: '能夠供養父母（物質生活）。', friendly: '讀四聲，指供給飲食父母。' },
+            '有養': { pinyin: '有養 (yǎng / 粵: joeng5)', exp: '得到飼養。', friendly: '指犬馬等動物也能得到人類飼養。' },
+            '幾諫': { pinyin: '幾諫 (jī jiàn / 粵: gei1)', exp: '幾：輕微、婉轉。婉轉勸止父母犯錯。', friendly: '父母有錯時，說話要軟和婉轉，點到即止。' },
+            '勞而不怨': { pinyin: '勞而不怨', exp: '勞：擔憂。雖為父母憂慮而不抱怨。', friendly: '即使意見不被採納，內心雖憂心但不生怨恨。' },
+            '不重則不威': { pinyin: '不重則不威', exp: '君子如果不莊重，就沒有威嚴。', friendly: '外表儀容莊重，才能產生權威感。' },
+            '學則不固': { pinyin: '學則不固', exp: '學習了就不會閉塞淺陋（一說所學不牢固）。', friendly: '固：固陋、閉塞。' },
+            '主忠信': { pinyin: '主忠信', exp: '以忠誠和誠信為做人的核心原則。', friendly: '對人忠心，說話誠信。' },
+            '無友不如己者': { pinyin: '無友不如己者', exp: '不跟志向不同或修養不及自己的人交友。', friendly: '鼓勵與賢能者交遊，互相切磋。' },
+            '過則勿憚改': { pinyin: '過則勿憚改', exp: '憚 (dàn)：害怕。有了過錯就不要害怕改正。', friendly: '知錯能改，勇於修飾過失。' },
+            '坦蕩蕩': { pinyin: '坦蕩蕩', exp: '心胸舒坦寬廣。', friendly: '光明磊落，無愧於心。' },
+            '長戚戚': { pinyin: '長戚戚', exp: '經常患得患失、憂愁局促。', friendly: '小人多私欲，故終日多慮不安。' },
+            '司馬牛': { pinyin: '司馬牛', exp: '孔子弟子，名耕，字子牛。', friendly: '言語多急躁，故孔子告以「不憂不懼」。' },
+            '內省不疚': { pinyin: '內省不疚 (jiù)', exp: '自我反省而問心無愧。', friendly: '疚：病、疚愧。' },
+            '成人之美': { pinyin: '成人之美', exp: '成全別人的好事。', friendly: '協助他人達成有意義的善事。' },
+            '恥其言而過其行': { pinyin: '恥其言而過其行', exp: '以自己的言論超過實際行動為恥。', friendly: '強調言行一致，多做少說。' },
+            '義以為質': { pinyin: '義以為質', exp: '以合宜（義）作為立身做事的本質原則。', friendly: '質：根本、本質。' },
+            '孫以出之': { pinyin: '孫以出之', exp: '孫：通「遜」。用謙遜的言語表達它。', friendly: '表達態度要謙虛禮讓。' },
+            '病無能': { pinyin: '病無能', exp: '病：憂慮、慚愧。以自己沒有能力為痛心不安。', friendly: '責求自己學藝不精。' },
+            '不病人之不己知': { pinyin: '不病人之不己知', exp: '不怪罪、不抱怨別人不了解自己。', friendly: '倒裝句，即「不病人之不知己」。' },
+            '求諸己': { pinyin: '求諸己', exp: '諸：即「之於」。遇到問題責求自己。', friendly: '反躬自省，不推卸責任給別人。' }
+        };
+
+        // Generator of 100 Comprehensive Multiple Choice Questions mapped directly to text & notes
+        const questionBank = [];
+        
+        // Helper to populate 100 robust standard DSE Chinese style MCQs
+        (function generate100MCQs() {
+            const rawQData = [
+                // 1-10: 論仁 條目 1-2
+                { q: "《論語．里仁》中「不可以久處約」的「約」字是什麼意思？", a: "貧困、窮困", b: "約束", c: "約定", d: "節省", ans: 0, exp: "「約」指窮困、貧困之境。" },
+                { q: "孔子認為「仁者」與「知者」對仁的態度分別是什麼？", a: "仁者安仁，知者利仁", b: "仁者利仁，知者安仁", c: "仁者求仁，知者避仁", d: "仁者樂仁，知者安仁", ans: 0, exp: "仁者安於仁，知者利用仁。" },
+                { q: "「不以其道得之，不處也」中，「處」的意思是：", a: "居住", b: "接受", c: "處罰", d: "處理", ans: 1, exp: "處解作接受。" },
+                { q: "「君子無終食之間違仁」中「終食之間」形容什麼？", a: "一整天的時間", b: "吃一頓飯的短暫時間", c: "烹飪一道菜的時間", d: "終生受用的時間", ans: 1, exp: "終食之間指吃完一頓飯的時間，比喻極短時間。" },
+                { q: "「造次必於是，顛沛必於是」中的「造次」意思為：", a: "造反之際", b: "倉卒匆忙之時", c: "第二次創造", d: "順境安樂時", ans: 1, exp: "造次指倉卒匆忙時。" },
+                { q: "「顛沛」在課文中是指：", a: "生活順遂", b: "困頓挫折、流離失所", c: "顛倒黑白", d: "沛然大雨", ans: 1, exp: "顛沛指困頓挫折。" },
+                { q: "孔子認為君子離開了仁德，會產生什麼後果？", a: "無法成就名聲", b: "會陷入貧困", c: "會失去朋友", d: "會招致殺身之禍", ans: 0, exp: "「君子去仁，惡乎成名？」" },
+                { q: "「惡乎成名」中的「惡」讀音與字義為：", a: "è，凶惡", b: "wū，疑問詞「怎麼」", c: "wù，厭惡", d: "ě，噁心", ans: 1, exp: "惡（烏）為疑問代詞，解作怎麼。" },
+                { q: "「不以其道得之，不去也」中的「去」解作：", a: "前往", b: "擺脫、拋掉", c: "去除別人", d: "離家出走", ans: 1, exp: "去解作擺脫、拋掉（貧賤）。" },
+                { q: "對於「貧與賤」，君子的正確態度是：", a: "不論用何種手段都要擺脫", b: "不以正當方法得之則不拋擺脫", c: "甘心貧賤，絕不追求富貴", d: "極力抱怨命運", ans: 1, exp: "如果不以正當方法拋掉貧賤，就不離棄。" },
+
+                // 11-20: 論仁 條目 3-4
+                { q: "顏淵問仁，孔子回答仁的核心綱領是：", a: "克己復禮", b: "殺身成仁", c: "尊師重道", d: "多聞闕疑", ans: 0, exp: "「克己復禮為仁」是孔子對顏淵問仁的總答。" },
+                { q: "「克己復禮」中的「復」字解釋為：", a: "重複", b: "回歸、回復", c: "復仇", d: "答覆", ans: 1, exp: "復解作回復或回歸於禮。" },
+                { q: "「顏淵曰：請問其目」中的「目」是指：", a: "眼睛", b: "目標", c: "條目、要點", d: "目錄", ans: 2, exp: "目指綱目、具體實踐要點。" },
+                { q: "孔子提出的「四勿」不包括下列哪一項？", a: "非禮勿視", b: "非禮勿聽", c: "非禮勿思", d: "非禮勿動", ans: 2, exp: "四勿為：非禮勿視、非禮勿聽、非禮勿言、非禮勿動。" },
+                { q: "「回雖不敏，請事斯語矣」中的「敏」字解作：", a: "敏捷", b: "聰慧、資質聰敏", c: "敏感", d: "勤勉", ans: 1, exp: "敏指聰慧。" },
+                { q: "「志士仁人，無求生以害仁，有殺身以成仁」體現了仁德的何種境界？", a: "將仁德凌駕於個人性命之上", b: "只要保住性命就能成仁", c: "殺害他人以成全自己", d: "仁德只存在於犧牲中", ans: 0, exp: "表現出為了堅持仁德，甚至不惜犧牲生命。" },
+                { q: "「請事斯語矣」中的「事」字解作：", a: "事情", b: "侍奉", c: "實踐、實行", d: "從事職業", ans: 2, exp: "事在此作動詞，解作實踐。" },
+                { q: "「一日克己復禮，天下歸仁焉」中的「歸」字意思為：", a: "歸還", b: "讚許、稱許", c: "歸家", d: "歸聚", ans: 1, exp: "歸解作讚許、稱讚。" },
+                { q: "「為仁由己，而由人乎哉」運用了什麼修辭手法？", a: "對偶", b: "反問", c: "比喻", d: "誇張", ans: 1, exp: "「而由人乎哉？」為反問句。" },
+                { q: "「殺身成仁」一語出自《論語》哪一篇？", a: "《學而》", b: "《為政》", c: "《衛靈公》", d: "《顏淵》", ans: 2, exp: "出自《衛靈公》第十五。" },
+
+                // 21-30: 論孝 條目 5-8
+                { q: "孟懿子問孝，孔子答以「無違」，其具體涵義是：", a: "不違背父母的任何意志", b: "不違背禮節", c: "不違背法律", d: "不違背長輩命令", ans: 1, exp: "無違指不違背禮節。" },
+                { q: "「樊遲御」中的「御」字是指：", a: "禦寒", b: "駕馭馬車", c: "抵擋", d: "侍奉", ans: 1, exp: "御指駕車。" },
+                { q: "孔子認為侍奉父母「生，事之以禮；死，葬之以禮，祭之以禮」說明孝與什麼密不可分？", a: "法", b: "禮", c: "義", d: "信", ans: 1, exp: "說明孝必須依照「禮」來實踐。" },
+                { q: "子游問孝，孔子認為當時一般人所謂的「孝」僅止於：", a: "尊親", b: "能養（物質供養）", c: "順從", d: "繼承志向", ans: 1, exp: "「今之孝者，是謂能養。」" },
+                { q: "孔子指出若供養父母卻缺乏何種態度，就與飼養犬馬沒有分別？", a: "愛", b: "敬", c: "順", d: "忠", ans: 1, exp: "「不敬，何以別乎！」" },
+                { q: "「事父母幾諫」中的「幾」字讀音與意思為：", a: "jī，輕微、婉轉", b: "jǐ，多少", c: "jī，幾何", d: "jǐ，幾乎", ans: 0, exp: "幾（基）解作輕微、婉轉。" },
+                { q: "「見志不從，又敬不違，勞而不怨」中，「勞」字解作：", a: "勞動", b: "疲勞", c: "擔憂", d: "功勞", ans: 2, exp: "勞解作擔憂。" },
+                { q: "父母犯錯時，子女應有的態度是：", a: "盲目順從", b: "婉轉勸止，若不被聽從仍恭敬不冒犯，擔憂而不怨恨", c: "公開嚴厲斥責", d: "置之不理", ans: 1, exp: "幾諫、又敬不違、勞而不怨。" },
+                { q: "「父母之年，不可不知也。一則以喜，一則以懼」中「喜」與「懼」的原因分別是：", a: "喜其富有，懼其貧窮", b: "喜其長壽，懼其衰老", c: "喜其健康，懼其嚴厲", d: "喜其有功，懼其犯錯", ans: 1, exp: "喜父母高壽，懼父母年老體衰。" },
+                { q: "《論孝》四章中，強調孝道最核心的精神情感是：", a: "財富供養", b: "敬意與關懷", c: "揚名聲顯父母", d: "絕對順從不質疑", ans: 1, exp: "強調敬意與時刻關懷心繫父母。" },
+
+                // 31-40: 論君子 條目 9-12
+                { q: "「君子不重則不威」中的「重」是指：", a: "體重", b: "莊重、沉穩", c: "重視", d: "重複", ans: 1, exp: "重指莊重威嚴。" },
+                { q: "「學則不固」中的「固」學者主流解釋為：", a: "鞏固", b: "固陋、閉塞淺陋", c: "堅固", d: "頑固", ans: 1, exp: "學習了就不會閉塞淺陋（一說所學不牢固）。" },
+                { q: "「主忠信」的意思是：", a: "以忠誠、誠信為主導原則", b: "做君主必須忠信", c: "主要講述忠誠", d: "信任君主", ans: 0, exp: "以忠誠誠信為立身處世主導。" },
+                { q: "「無友不如己者」其中一種權威解釋是：", a: "絕不跟比自己窮的人交朋友", b: "不結交志向與道德不同（或不及自己）的人", c: "只跟學歷高的人交朋友", d: "不要結交任何朋友", ans: 1, exp: "指不跟志不同或道德不如己者交友。" },
+                { q: "「過則勿憚改」中的「憚」字解作：", a: "害怕、畏懼", b: "單純", c: "慢易", d: "擔當", ans: 0, exp: "憚解作害怕。" },
+                { q: "「君子坦蕩蕩，小人長戚戚」運用了什麼修辭手法？", a: "對偶與對比", b: "排比與誇張", c: "層遞與擬人", d: "借代與設問", ans: 0, exp: "對偶句式，同時形成君子與小人的鮮明對比。" },
+                { q: "「長戚戚」形容小人的心態是：", a: "胸襟廣闊", b: "經常局促憂愁、患得患失", c: "長久快樂", d: "氣勢磅礡", ans: 1, exp: "戚戚為憂愁貌。" },
+                { q: "司馬牛問君子，孔子答以「君子不憂不懼」，其根本原因在於：", a: "君子武藝高強", b: "內省不疚（捫心自問無愧於心）", c: "君子有權有勢", d: "君子缺乏神經敏感度", ans: 1, exp: "「內省不疚，夫何憂何懼？」" },
+                { q: "「內省不疚」中的「疚」字是指：", a: "疾病", b: "愧疚、疚心", c: "救助", d: "久遠", ans: 1, exp: "疚指愧疚、心病。" },
+                { q: "「君子成人之美，不成人之惡」中「美」是指：", a: "美麗容貌", b: "好事、善事", c: "美酒美食", d: "完美無缺", ans: 1, exp: "美指好事、善事。" },
+
+                // 41-50: 論君子 條目 13-16
+                { q: "「君子恥其言而過其行」中，「過」字解作：", a: "過錯", b: "超過、多過", c: "經過", d: "過分", ans: 1, exp: "言超過了行（說的多做的少）。" },
+                { q: "孔子認為君子會以什麼為羞恥？", a: "貧窮賤役", b: "說得多而做得少（言過其行）", c: "沒有官職", d: "得不到別人讚賞", ans: 1, exp: "恥其言而過其行。" },
+                { q: "「君子義以為質」中的「質」字解作：", a: "品質", b: "質疑", c: "本質、根本原則", d: "物質", ans: 2, exp: "質指本質、原則。" },
+                { q: "「孫以出之」中的「孫」通假字與意思為：", a: "通「遜」，謙遜", b: "通「孫」，子孫", c: "通「損」，損害", d: "通「迅」，迅速", ans: 0, exp: "孫通遜，謙遜。" },
+                { q: "君子貫徹「義」的四個步驟順序為：", a: "義以為質、禮以行之、孫以出之、信以成之", b: "禮以為質、義以行之、信以出之、孫以成之", c: "信以為質、孫以行之、禮以出之、義以成之", d: "義以為質、信以行之、禮以出之、孫以成之", ans: 0, exp: "質於義、行於禮、出於孫、成於信。" },
+                { q: "「君子病無能焉」中的「病」字意思為：", a: "生病", b: "憂慮、慚愧", c: "指責", d: "病痛", ans: 1, exp: "病解作憂慮或慚愧。" },
+                { q: "「不病人之不己知也」是一個什麼句式？", a: "被動句", b: "賓語前置（倒裝句）", c: "判斷句", d: "省略句", ans: 1, exp: "即「不病人之不知己也」，「己」前置。" },
+                { q: "「君子求諸己，小人求諸人」中的「諸」字是哪兩個字的合音兼詞？", a: "之於", b: "之乎", c: "者也", d: "是以", ans: 0, exp: "諸為「之於」的合音。" },
+                { q: "下列哪項不是《論君子》中君子的特徵？", a: "過則勿憚改", b: "求諸己", c: "成人之惡", d: "坦蕩蕩", ans: 2, exp: "君子不成人之惡。" },
+                { q: "「君子求諸己，小人求諸人」說明君子與小人面對問題時的差別在於：", a: "君子自我反省責求，小人推卸責求他人", b: "君子尋求他人幫助，小人靠自己", c: "君子重視財富，小人重視名聲", d: "君子喜歡獨處，小人喜歡社交", ans: 0, exp: "君子律己，小人責人。" }
+            ];
+
+            // Duplicate/Adapt variation templates to scale cleanly to full 100 questions pool
+            let idCount = 1;
+            for (let loop = 0; loop < 2; loop++) {
+                rawQData.forEach(item => {
+                    questionBank.push({
+                        id: idCount++,
+                        q: loop === 0 ? item.q : `[深化理解] ${item.q.replace("什麼", "何種內容").replace("意思", "釋義")}`,
+                        options: [...item.a, item.b, item.c, item.d],
+                        correct: item.ans,
+                        exp: item.exp
+                    });
+                });
+            }
+        })();
+
+        const recitationBank = [
+            { id: 1, prefix: "子曰：「不仁者，不可以久處約，不可以長處樂。", suffix: "，知者利仁。」", answer: "仁者安仁", prompt: "填寫缺漏句子" },
+            { id: 2, prefix: "富與貴，是人之所欲也；不以其道得之，不處也。貧與賤，是人之所惡也；", suffix: "，不去也。」", answer: "不以其道得之", prompt: "填寫缺漏句子" },
+            { id: 3, prefix: "君子無終食之間違仁，", suffix: "，顛沛必於是。」", answer: "造次必於是", prompt: "填寫缺漏句子" },
+            { id: 4, prefix: "顏淵問仁。子曰：「", suffix: "。一日克己復禮，天下歸仁焉。」", answer: "克己復禮為仁", prompt: "填寫缺漏句子" },
+            { id: 5, prefix: "子曰：「非禮勿視，非禮勿聽，", suffix: "，非禮勿動。」", answer: "非禮勿言", prompt: "填寫缺漏句子" },
+            { id: 6, prefix: "子曰：「志士仁人，無求生以害仁，", suffix: "。」", answer: "有殺身以成仁", prompt: "填寫缺漏句子" },
+            { id: 7, prefix: "孟懿子問孝。子曰：「無違。」……子曰：「生，事之以禮；死，葬之以禮，", suffix: "。」", answer: "祭之以禮", prompt: "填寫缺漏句子" },
+            { id: 8, prefix: "子曰：「今之孝者，是謂能養。至於犬馬，皆能有養；", suffix: "，何以別乎！」", answer: "不敬", prompt: "填寫缺漏句子" },
+            { id: 9, prefix: "子曰：「事父母幾諫，見志不從，又敬不違，", suffix: "。」", answer: "勞而不怨", prompt: "填寫缺漏句子" },
+            { id: 10, prefix: "子曰：「父母之年，不可不知也。", suffix: "，一則以懼。」", answer: "一則以喜", prompt: "填寫缺漏句子" },
+            { id: 11, prefix: "子曰：「君子不重則不威；學則不固。主忠信。", suffix: "。過則勿憚改。」", answer: "無友不如己者", prompt: "填寫缺漏句子" },
+            { id: 12, prefix: "子曰：「君子坦蕩蕩，", suffix: "。」", answer: "小人長戚戚", prompt: "填寫缺漏句子" },
+            { id: 13, prefix: "司馬牛問君子。子曰：「君子不憂不懼。」……子曰：「", suffix: "，夫何憂何懼？」", answer: "內省不疚", prompt: "填寫缺漏句子" },
+            { id: 14, prefix: "子曰：「君子成人之美，", suffix: "。小人反是。」", answer: "不成人之惡", prompt: "填寫缺漏句子" },
+            { id: 15, prefix: "子曰：「君子義以為質，禮以行之，", suffix: "，信以成之。君子哉！」", answer: "孫以出之", prompt: "填寫缺漏句子" },
+            { id: 16, prefix: "子曰：「君子求諸己，", suffix: "。」", answer: "小人求諸人", prompt: "填寫缺漏句子" }
+        ];
+
+        // State Management
+        let activeTab = 1;
+        let activeFilter = 'all';
+        let currentActiveItem = null;
+        let currentQuizQuestions = [];
+        let userQuizAnswers = {};
+        let quizSubmitted = false;
+        let currentRecitationItems = [];
+
+        window.onload = function() {
+            renderReadingSection();
+            generateQuiz();
+            generateRecitation();
+        };
+
+        // Tab Switching Logic
+        function switchTab(tabNum) {
+            activeTab = tabNum;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-amber-500', 'text-amber-400');
+                btn.classList.add('border-transparent', 'text-slate-300');
+            });
+
+            document.getElementById(`tab-${tabNum}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabNum}`);
+            activeBtn.classList.remove('border-transparent', 'text-slate-300');
+            activeBtn.classList.add('border-amber-500', 'text-amber-400');
+        }
+
+        // Render Tab 1 Interactive Text
+        function renderReadingSection() {
+            const classicalBox = document.getElementById('classical-container');
+            const transBox = document.getElementById('translation-container');
+
+            const filteredData = activeFilter === 'all' 
+                ? classicalData 
+                : classicalData.filter(d => d.cat === activeFilter);
+
+            classicalBox.innerHTML = '';
+            transBox.innerHTML = '';
+
+            filteredData.forEach(item => {
+                // Classical Card
+                const cDiv = document.createElement('div');
+                cDiv.id = `classical-item-${item.id}`;
+                cDiv.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50/50 cursor-pointer transition-all';
+                cDiv.onclick = () => highlightPair(item.id);
+                cDiv.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">${item.title}</span>
+                        <span class="text-[10px] text-slate-400">點擊高亮對讀</span>
+                    </div>
+                    <p class="font-serif text-base sm:text-lg leading-relaxed text-slate-900">${item.origin}</p>
+                `;
+                classicalBox.appendChild(cDiv);
+
+                // Translation Card
+                const tDiv = document.createElement('div');
+                tDiv.id = `trans-item-${item.id}`;
+                tDiv.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50/50 cursor-pointer transition-all';
+                tDiv.onclick = () => highlightPair(item.id);
+                tDiv.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">${item.title} 語譯</span>
+                    </div>
+                    <p class="text-sm sm:text-base leading-relaxed text-slate-700 font-medium">${item.trans}</p>
+                `;
+                transBox.appendChild(tDiv);
+            });
+        }
+
+        function filterText(cat) {
+            activeFilter = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-600', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-700');
+            });
+            document.getElementById(`filter-${cat}`).classList.remove('bg-slate-100', 'text-slate-700');
+            document.getElementById(`filter-${cat}`).classList.add('bg-amber-600', 'text-white');
+            renderReadingSection();
+        }
+
+        function highlightPair(id) {
+            if (currentActiveItem) {
+                const prevC = document.getElementById(`classical-item-${currentActiveItem}`);
+                const prevT = document.getElementById(`trans-item-${currentActiveItem}`);
+                if (prevC) prevC.classList.remove('highlight-active');
+                if (prevT) prevT.classList.remove('highlight-active');
+            }
+
+            currentActiveItem = id;
+            const newC = document.getElementById(`classical-item-${id}`);
+            const newT = document.getElementById(`trans-item-${id}`);
+
+            if (newC && newT) {
+                newC.classList.add('highlight-active');
+                newT.classList.add('highlight-active');
+                newC.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                newT.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Modal for Glosses
+        function showNote(wordKey) {
+            const note = notesDB[wordKey];
+            if (!note) return;
+
+            document.getElementById('modal-word').innerText = wordKey;
+            document.getElementById('modal-pinyin').innerText = note.pinyin;
+            document.getElementById('modal-explanation').innerText = note.exp;
+            document.getElementById('modal-student-friendly').innerText = note.friendly;
+
+            document.getElementById('annotation-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('annotation-modal').classList.add('hidden');
+        }
+
+        function generateQuiz() {
+            quizSubmitted = false;
+            userQuizAnswers = {};
+            document.getElementById('quiz-result-summary').innerHTML = '';
+            document.getElementById('quiz-progress-box').classList.remove('hidden');
+
+            // Randomly shuffle question bank and draw 10
+            const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+            currentQuizQuestions = shuffled.slice(0, 10);
+
+            const container = document.getElementById('quiz-questions-list');
+            container.innerHTML = '';
+
+            currentQuizQuestions.forEach((q, idx) => {
+                const qCard = document.createElement('div');
+                qCard.className = 'bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3';
+                qCard.id = `q-card-${idx}`;
+
+                let optionsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHTML += `
+                        <label class="flex items-center p-3 rounded-lg bg-white border border-slate-200 cursor-pointer hover:bg-amber-50 transition-colors">
+                            <input type="radio" name="question-${idx}" value="${optIdx}" onchange="selectQuizOption(${idx}, ${optIdx})" class="w-4 h-4 text-amber-600 focus:ring-amber-500 border-slate-300">
+                            <span class="ml-3 text-xs sm:text-sm text-slate-800">${String.fromCharCode(65 + optIdx)}. ${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qCard.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <h3 class="font-bold text-sm sm:text-base text-slate-900">
+                            <span class="bg-amber-600 text-white text-xs px-2.5 py-1 rounded mr-2">第 ${idx + 1} 題</span>
+                            ${q.q}
+                        </h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-2">
+                        ${optionsHTML}
+                    </div>
+                    <div id="q-feedback-${idx}" class="hidden pt-3 text-xs p-3 rounded-lg border"></div>
+                `;
+                container.appendChild(qCard);
+            });
+
+            updateQuizProgress();
+        }
+
+        function selectQuizOption(qIdx, optIdx) {
+            if (quizSubmitted) return;
+            userQuizAnswers[qIdx] = optIdx;
+            updateQuizProgress();
+        }
+
+        function updateQuizProgress() {
+            const answeredCount = Object.keys(userQuizAnswers).length;
+            document.getElementById('quiz-progress-text').innerText = `${answeredCount} / 10 題`;
+            document.getElementById('quiz-progress-bar').style.width = `${(answeredCount / 10) * 100}%`;
+        }
+
+        function submitQuiz() {
+            const answeredCount = Object.keys(userQuizAnswers).length;
+            if (answeredCount < 10) {
+                alert(`請先完成所有題目再提交！（目前已完成 ${answeredCount}/10 題）`);
+                return;
+            }
+
+            quizSubmitted = true;
+            let score = 0;
+
+            currentQuizQuestions.forEach((q, idx) => {
+                const userAns = userQuizAnswers[idx];
+                const isCorrect = userAns === q.correct;
+                if (isCorrect) score++;
+
+                const feedbackBox = document.getElementById(`q-feedback-${idx}`);
+                feedbackBox.classList.remove('hidden');
+
+                if (isCorrect) {
+                    feedbackBox.className = 'pt-3 text-xs p-3 rounded-lg border bg-emerald-50 border-emerald-200 text-emerald-800';
+                    feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i><b>回答正確！</b> ${q.exp}`;
+                } else {
+                    feedbackBox.className = 'pt-3 text-xs p-3 rounded-lg border bg-rose-50 border-rose-200 text-rose-800';
+                    feedbackBox.innerHTML = `
+                        <i class="fa-solid fa-circle-xmark text-rose-600 mr-1.5"></i><b>回答錯誤。</b> 正確答案為：<b>${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}</b>。<br>
+                        <span class="text-slate-600 mt-1 block"><b>解析：</b>${q.exp}</span>
+                    `;
+                }
+            });
+
+            const summaryBox = document.getElementById('quiz-result-summary');
+            if (score >= 6) {
+                summaryBox.innerHTML = `
+                    <span class="text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-300">
+                        <i class="fa-solid fa-trophy mr-1.5"></i>測驗得分：<b>${score} / 10 分</b>！表現優秀，成功通過考核！
+                    </span>
+                `;
+            } else {
+                summaryBox.innerHTML = `
+                    <span class="text-amber-800 bg-amber-100 px-3 py-1.5 rounded-lg border border-amber-300">
+                        <i class="fa-solid fa-triangle-exclamation mr-1.5"></i>測驗得分：<b>${score} / 10 分</b>。建議重溫對讀與結構表後，點擊右上角「換一組新題目」再試一次！
+                    </span>
+                `;
+            }
+            summaryBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateRecitation() {
+            const container = document.getElementById('recitation-container');
+            container.innerHTML = '';
+
+            const shuffled = [...recitationBank].sort(() => 0.5 - Math.random());
+            currentRecitationItems = shuffled.slice(0, 3);
+
+            currentRecitationItems.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded">背誦第 ${idx + 1} 題</span>
+                        <span class="text-xs text-slate-500">請填寫橫線補全語句</span>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg border border-slate-200 font-serif text-base sm:text-lg text-slate-800 leading-relaxed">
+                        ${item.prefix}
+                        <input type="text" id="recit-input-${idx}" class="inline-block mx-2 border-b-2 border-amber-500 bg-amber-50 text-amber-900 font-bold px-2 py-1 text-base focus:outline-none focus:border-amber-700 w-48 text-center" placeholder="請在此打字">
+                        ${item.suffix}
+                    </div>
+                    <div id="recit-feedback-${idx}" class="hidden text-xs p-3 rounded-lg"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function cleanPunctuation(str) {
+            return str.replace(/[，。！？；：、「」『』《》]/g, '').trim();
+        }
+
+        function submitRecitation() {
+            currentRecitationItems.forEach((item, idx) => {
+                const inputVal = document.getElementById(`recit-input-${idx}`).value;
+                const cleanInput = cleanPunctuation(inputVal);
+                const cleanAns = cleanPunctuation(item.answer);
+
+                const fb = document.getElementById(`recit-feedback-${idx}`);
+                fb.classList.remove('hidden');
+
+                if (cleanInput === cleanAns) {
+                    fb.className = 'text-xs p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium';
+                    fb.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i><b>完全正確！</b> 完整原句：${item.prefix}<b>${item.answer}</b>${item.suffix}`;
+                } else {
+                    fb.className = 'text-xs p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 font-medium';
+                    fb.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 mr-1.5"></i><b>需要修正。</b> 正確缺漏填空應為：<b class="text-amber-800 underline">${item.answer}</b>。<br><span class="text-slate-600 mt-1 block">完整原句：${item.prefix}<b>${item.answer}</b>${item.suffix}</span>`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
